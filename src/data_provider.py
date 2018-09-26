@@ -116,10 +116,16 @@ class DataProvider(object):
         self._cifar = []
         self._overlays = []
         for  i in range(cifar.shape[0]):
+            import matplotlib.pyplot as plt
+
             background = Image.fromarray(cifar[i], 'RGB')
             background = background.resize((target_height, target_width),
                                            Image.BILINEAR)
             background = np.asarray(background, dtype=np.float32) / 255.0
+
+            plt.imshow(cifar[i] / 255.0)
+            plt.show()
+            
             self._cifar.append(background)
 
             overlay = np.array([[_chooseForegroundColor(background)]], dtype=np.float32)
@@ -136,11 +142,12 @@ class DataProvider(object):
 
         assert len(self._cifar) == len(self._overlays)
         assert len(self._mnist_images) == len(self._mnist_labels)
+        assert len(self._cifar) > 0 and len(self._mnist_images) > 0
 
 
     def __call__(self):
-        ci = random.randint(0, len(self._cifar))
-        mi = random.randint(0, len(self._mnist_images))
+        ci = random.randrange(len(self._cifar))
+        mi = random.randrange(len(self._mnist_images))
 
         img, loc = _combinedImage(self._cifar[ci],
                                   self._mnist_images[mi],
